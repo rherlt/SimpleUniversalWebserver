@@ -46,18 +46,20 @@ namespace SimpleUniversalWebserver.Extensions
         public static string ToHeaderString(this HttpResponseMessage response)
         {
             StringBuilder headerBuilder = new StringBuilder();
-            headerBuilder.AppendLine($"HTTP/{response.Version} {response.StatusCode} {response.ReasonPhrase}");
+            headerBuilder.AppendLine($"HTTP/{response.Version} {(int)response.StatusCode} {response.ReasonPhrase}");
             //headerBuilder.AppendLine($"Content-Length: {contentLength}");
             foreach (var header in response.Headers)
             {
                 headerBuilder.AppendLine($"{header.Key}: {header.Value}");
             }
-            foreach (var header in response.Content.Headers)
+            if (response.Content != null)
             {
-                headerBuilder.AppendLine($"{header.Key}: {string.Join(", ", header.Value)}");
+                foreach (var header in response.Content.Headers)
+                {
+                    headerBuilder.AppendLine($"{header.Key}: {string.Join(", ", header.Value)}");
+                }
             }
-            //if (response.Headers.Connection.Count == 0)
-            //    headerBuilder.AppendLine("Connection: close\r\n");
+
             headerBuilder.AppendLine();
             return headerBuilder.ToString();
         }

@@ -7,8 +7,8 @@
     <ProjectGuid>{8FB87D23-74A3-4636-8F84-4F0A6112460B}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestApp</RootNamespace>
-    <AssemblyName>TestApp</AssemblyName>
+    <RootNamespace>WebserverTest</RootNamespace>
+    <AssemblyName>WebserverTest</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>

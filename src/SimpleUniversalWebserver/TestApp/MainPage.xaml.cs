@@ -16,11 +16,12 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using SimpleUniversalWebserver.Errors;
 using SimpleUniversalWebserver.Net;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
-namespace TestApp
+namespace WebserverTest
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
@@ -30,38 +31,63 @@ namespace TestApp
         public MainPage()
         {
             this.InitializeComponent();
-        }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            StartServer();
-
-        }
-
-        private const string Html = "<html><head></head><body>this works!</body></html>";
-
-        public void StartServer()
-        {
-            HttpServer server = new HttpServer(8000, MessageHandler)
+            _server = new HttpServer(8000, MessageHandler)
             {
                 ErrorWithStackTrace = true,
                 EnforceHtmlResponseBody = true
             };
-            server.StartServer();
+
+            startButton_Click(null, null);
+        }
+
+        private const string Html = "<html><head></head><body>this works! Date:{0}</br>RequestUri: {1}</body></html>";
+        private HttpServer _server;
+
+        
+
+        private static bool MessageHandler(HttpRequestMessage request, HttpResponseMessage response)
+        {
+            if (request.RequestUri.OriginalString.Contains("status"))
+            {
+                try
+                {
+                    int code =
+                        Convert.ToInt32(
+                            request.RequestUri.OriginalString.Substring(request.RequestUri.OriginalString.Length - 3, 3));
+                    HttpStatusCode status = (HttpStatusCode) code;
+                    throw new HttpStatusException(status);
+                }
+                catch (HttpStatusException)
+                {
+                    throw;
+                }
+                catch (Exception)
+                {
+
+                    throw new HttpStatusException(HttpStatusCode.BadRequest);
+                }
+            }
+            else
+                response.Content = new StringContent(string.Format(Html, DateTime.Now.ToString("s"), request.RequestUri.OriginalString), Encoding.UTF8, "text/html");
+            return true;
+        }
+
+       
+        private async void startButton_Click(object sender, RoutedEventArgs e)
+        {
+            StatusTextBlock.Text = "Starting Server...";
+            await _server.StartServer();
+            StatusTextBlock.Text = "Server running.";
+
 
         }
 
-        private static HttpResponseMessage MessageHandler(HttpRequestMessage httpRequestMessage)
+        private void stopButton_Click(object sender, RoutedEventArgs e)
         {
-            HttpResponseMessage response;
-            response = new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(Html, Encoding.UTF8, "text/html"),
-                RequestMessage = httpRequestMessage
-            };
-
-            return response;
+            StatusTextBlock.Text = "Stopping Server...";
+            _server.StopServer();
+            StatusTextBlock.Text = "Server stopped.";
         }
     }
 }

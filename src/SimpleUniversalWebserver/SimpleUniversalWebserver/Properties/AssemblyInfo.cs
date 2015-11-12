@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Resources;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -6,9 +7,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SimpleUniversalWebserver")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Simple webserver library for Universal Apps")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("h3ko GmbH")]
 [assembly: AssemblyProduct("SimpleUniversalWebserver")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
@@ -27,3 +28,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: ComVisible(false)]
+[assembly: NeutralResourcesLanguage("en")]
+

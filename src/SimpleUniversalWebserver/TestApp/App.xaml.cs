@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -15,7 +16,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-namespace TestApp
+namespace WebserverTest
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
@@ -33,6 +34,12 @@ namespace TestApp
                 Microsoft.ApplicationInsights.WindowsCollectors.Session);
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            UnhandledException += App_UnhandledException; ;
+        }
+
+        private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Debug.WriteLine($"Unhandled Exception:\n{e}\n\n");
         }
 
         /// <summary>
