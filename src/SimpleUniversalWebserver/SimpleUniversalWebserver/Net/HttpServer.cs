@@ -66,28 +66,30 @@ namespace SimpleUniversalWebserver.Net
             }
         }
 
-        public virtual void StopServer()
+        public virtual async Task StopServer()
         {
+            await _listener.CancelIOAsync();
             _listener.Dispose();
         }
 
         public virtual void Dispose()
         {
-            StopServer();
+            StopServer().Wait();
         }
 
         protected virtual StreamSocketListener CreateStreamSocketListener()
         {
             var listener = new StreamSocketListener();
-            listener.ConnectionReceived += (s, e) => ProcessRequestAsync(s, e.Socket);
+            listener.ConnectionReceived += (s, e) => ProcessRequest(s, e.Socket);
             return listener;
         }
 
-        protected virtual async void ProcessRequestAsync(object sender, StreamSocket socket)
+        protected virtual async void ProcessRequest(object sender, StreamSocket socket)
         {
             Debug.WriteLine($"{DateTime.Now.ToString("s")}: request recieved from {socket.Information.RemoteAddress}:{socket.Information.RemotePort} ({socket.Information.RemoteHostName})...");
 
             // this works for text only
+
             StringBuilder request = new StringBuilder();
             using (IInputStream input = socket.InputStream)
             {
@@ -102,14 +104,12 @@ namespace SimpleUniversalWebserver.Net
                 }
             }
 
-            using (IOutputStream output = socket.OutputStream)
-            {
-                HttpRequestMessage httpRequest;
-                HttpResponseMessage httpResponse = new HttpResponseMessage();
+            
+            HttpResponseMessage httpResponse = new HttpResponseMessage();
                 try
                 {
                     
-                    httpRequest = request.ToString().ToHttpRequest();
+                    var httpRequest = request.ToString().ToHttpRequest();
                     httpResponse.RequestMessage = httpRequest;
                     bool isHandled = false;
                     //iterate through all handlers to determine if message is handled
@@ -137,9 +137,9 @@ namespace SimpleUniversalWebserver.Net
                     httpResponse = CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
                 }
 
-                await WriteResponseAsync(httpResponse, output);
+                await WriteResponseAsync(httpResponse, socket.OutputStream);
                 Debug.WriteLine($"{DateTime.Now.ToString("s")}: response sent...");
-            }
+            
         }
 
         protected virtual HttpResponseMessage CreateErrorResponse(HttpStatusCode status, Exception ex)
@@ -175,22 +175,16 @@ namespace SimpleUniversalWebserver.Net
             if (response.Content == null && EnforceHtmlResponseBody)
                 response.Content = CreateHtmlResponse(response.StatusCode);
 
-            using (Stream resp = os.AsStreamForWrite()) { 
+            using (Stream resp = os.AsStreamForWrite()) {
 
-                byte[] bodyArray;
-                if (response.Content != null)
-                    bodyArray = await response.Content.ReadAsByteArrayAsync();
-                else
-                    bodyArray = new byte[0];
-
-                MemoryStream stream = new MemoryStream(bodyArray);
                 string header = response.ToHeaderString();
-
                 byte[] headerArray = Encoding.UTF8.GetBytes(header);
-                await resp.WriteAsync(headerArray, 0, headerArray.Length);
-                await stream.CopyToAsync(resp);
-                await resp.FlushAsync();
 
+                await resp.WriteAsync(headerArray, 0, headerArray.Length);
+                if (response.Content != null)
+                    await response.Content.CopyToAsync(resp);
+
+                await resp.FlushAsync();
             }
         }
     }

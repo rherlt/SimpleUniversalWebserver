@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -46,21 +47,36 @@ namespace SimpleUniversalWebserver.Extensions
         public static string ToHeaderString(this HttpResponseMessage response)
         {
             StringBuilder headerBuilder = new StringBuilder();
-            headerBuilder.AppendLine($"HTTP/{response.Version} {(int)response.StatusCode} {response.ReasonPhrase}");
-            //headerBuilder.AppendLine($"Content-Length: {contentLength}");
-            foreach (var header in response.Headers)
+            try
             {
-                headerBuilder.AppendLine($"{header.Key}: {header.Value}");
-            }
-            if (response.Content != null)
-            {
-                foreach (var header in response.Content.Headers)
+                headerBuilder.AppendLine($"HTTP/{response.Version} {(int)response.StatusCode} {response.ReasonPhrase}");
+                foreach (var header in response.Headers)
                 {
-                    headerBuilder.AppendLine($"{header.Key}: {string.Join(", ", header.Value)}");
+                    headerBuilder.AppendLine($"{header.Key}: {header.Value}");
                 }
-            }
+                if (response.Content != null)
+                {
+                    foreach (var header in response.Content.Headers)
+                    {
+                        headerBuilder.AppendLine($"{header.Key}: {string.Join(", ", header.Value)}");
+                    }
+                    headerBuilder.AppendLine($"Content-Length: {response.Content.Headers.ContentLength}");
+                }
+                else
+                    headerBuilder.AppendLine("Content-Length: 0");
+                
+                if(response.Headers.Connection.Count == 0)
+                    headerBuilder.AppendLine("Connection: close");
 
-            headerBuilder.AppendLine();
+                headerBuilder.AppendLine();
+            }
+            catch (Exception ex)
+            {
+                    
+                Debug.WriteLine(ex);
+            }
+           
+            
             return headerBuilder.ToString();
         }
     }

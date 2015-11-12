@@ -46,7 +46,7 @@ namespace WebserverTest
 
         
 
-        private static bool MessageHandler(HttpRequestMessage request, HttpResponseMessage response)
+        private bool MessageHandler(HttpRequestMessage request, HttpResponseMessage response)
         {
             if (request.RequestUri.OriginalString.Contains("status"))
             {
@@ -55,7 +55,7 @@ namespace WebserverTest
                     int code =
                         Convert.ToInt32(
                             request.RequestUri.OriginalString.Substring(request.RequestUri.OriginalString.Length - 3, 3));
-                    HttpStatusCode status = (HttpStatusCode) code;
+                    HttpStatusCode status = (HttpStatusCode)code;
                     throw new HttpStatusException(status);
                 }
                 catch (HttpStatusException)
