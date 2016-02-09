@@ -119,15 +119,17 @@
     <Compile Include="Extensions\HttpExtensions.cs" />
     <Compile Include="MessageHandler\BaseMessageHandler.cs" />
     <Compile Include="MessageHandler\IMessageHandler.cs" />
-    <Compile Include="MessageHandler\RestMessageHandler.cs" />
-    <Compile Include="MessageHandler\SimpleMessaageHandler.cs" />
+    <Compile Include="MessageHandler\RestController.cs" />
+    <Compile Include="MessageHandler\SimpleMessageHandler.cs" />
     <Compile Include="MessageSerializer\JsonNetMessageSerializer.cs" />
     <Compile Include="Net\HttpServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MessageSerializer\IMessageSerializer.cs" />
     <Content Include="Properties\SimpleUniversalWebserver.rd.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="RestInterface\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
