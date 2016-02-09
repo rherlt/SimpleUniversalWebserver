@@ -42,14 +42,19 @@ namespace SimpleUniversalWebserver.Net
         public HttpServer(int port, Func<HttpRequestMessage, HttpResponseMessage, bool> messageHandler)
         {
             Port = port;
-            _messageHandlers = new List<IMessageHandler>();
-            _messageHandlers.Add(new SimpleMessaageHandler(messageHandler));
+            _messageHandlers = new List<IMessageHandler> {new SimpleMessageHandler(messageHandler)};
         }
 
         public HttpServer(int port, IEnumerable<IMessageHandler> messageHandlers)
         {
             Port = port;
             _messageHandlers = new List<IMessageHandler>(messageHandlers);
+        }
+
+        public HttpServer(int port, IMessageHandler messageHandler)
+        {
+            Port = port;
+            _messageHandlers = new List<IMessageHandler> { messageHandler };
         }
 
         public virtual async Task StartServer()

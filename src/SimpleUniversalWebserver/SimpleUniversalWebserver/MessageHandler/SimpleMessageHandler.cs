@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SimpleUniversalWebserver.MessageHandler
 {
-    public class SimpleMessaageHandler : IMessageHandler
+    public class SimpleMessageHandler : IMessageHandler
     {
-        public SimpleMessaageHandler(Func<HttpRequestMessage, HttpResponseMessage, bool> messageHandler)
+        public SimpleMessageHandler(Func<HttpRequestMessage, HttpResponseMessage, bool> messageHandler)
         {
             MessageHandler = messageHandler;
         }

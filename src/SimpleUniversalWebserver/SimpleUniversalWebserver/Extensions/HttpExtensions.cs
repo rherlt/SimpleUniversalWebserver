@@ -35,7 +35,14 @@ namespace SimpleUniversalWebserver.Extensions
                 {
                     string key = x.Substring(0, seperatorIndex).Trim();
                     string value = x.Substring(seperatorIndex + 1, x.Length - seperatorIndex - 1).Trim();
-                    req.Headers.Add(key, value);
+                    try
+                    {
+                        req.Headers.Add(key, value);
+                    }
+                    catch (Exception ex)
+                    {
+                          Debug.WriteLine($"Header {key}: {value} could not be added to incoming HttpRequestMessage, reason:\r\n {ex.Message}");
+                    }
                 }
             });
            
